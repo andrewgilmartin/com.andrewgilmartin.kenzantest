@@ -49,11 +49,11 @@ public class EmployerHttpServlet extends HttpServlet {
         // GET /employee/id 
         Optional<String> id = extractId(request.getPathInfo());
         if (id.isPresent()) {
-            Optional<Employee> o = employeer.findById(id.get());
-            if (o.isPresent()) {
+            Optional<Employee> employee = employeer.findById(id.get());
+            if (employee.isPresent()) {
                 response.setStatus(HttpServletResponse.SC_OK);
                 try (Writer out = response.getWriter()) {
-                    gson.toJson(o.get(), out);
+                    gson.toJson(employee.get(), out);
                 }
                 return;
             }
@@ -90,9 +90,9 @@ public class EmployerHttpServlet extends HttpServlet {
         if (id.isPresent()) {
             Optional<Employee> employee = employeer.findById(id.get());
             if (employee.isPresent()) {
-                Optional<Employee> data = extractEmployee(request);
-                if (data.isPresent()) {
-                    employee.get().overwrite(data);
+                Optional<Employee> updates = extractEmployee(request);
+                if (updates.isPresent()) {
+                    employee.get().overwrite(updates);
                     response.setStatus(HttpServletResponse.SC_OK);
                     try (Writer out = response.getWriter()) {
                         gson.toJson(employee.get(), out);

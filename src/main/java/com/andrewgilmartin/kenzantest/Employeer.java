@@ -15,6 +15,9 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
+/**
+ * The employer manages a collection of employees.
+ */
 public class Employeer {
 
     private final List<Employee> employees = new LinkedList<>();
@@ -39,7 +42,7 @@ public class Employeer {
         }
     }
 
-    public List<Employee> finalAll() {
+    public List<Employee> findAll() {
         lock.readLock().lock();
         try {
             return employees.stream().filter(e -> e.isActive()).collect(Collectors.toList());
