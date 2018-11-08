@@ -74,6 +74,7 @@ public class EmployerHttpServlet extends HttpServlet {
         if (data != null) {
             Employee employee = employeer.create(
                     data.getFirstName(),
+                    data.getMiddleInitial(),
                     data.getLastName(),
                     data.getDateOfBirth(),
                     data.getDateOfEmployment()

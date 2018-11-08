@@ -110,10 +110,11 @@ public class Employeer {
      * Create the new employee and add to the list of employees. Returns the
      * created employee.
      */
-    public Employee create(String firstName, String lastName, Date dateOfBirth, Date dateOfEmployment) {
+    public Employee create(String firstName, String middleInitial, String lastName, Date dateOfBirth, Date dateOfEmployment) {
         Employee e = new Employee(
                 UUID.randomUUID().toString(),
                 firstName,
+                middleInitial,
                 lastName,
                 dateOfBirth,
                 dateOfEmployment,

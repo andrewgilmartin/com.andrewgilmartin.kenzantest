@@ -7,17 +7,19 @@ public class Employee {
     public static final boolean ACTIVE = true;
     public static final boolean INACTIVE = !ACTIVE;
 
-    private String id;
+    private final String id;
     private String firstName;
+    private String middleInitial;
     private String lastName;
     private Date dateOfBirth;
     private Date dateOfEmployment;
     private Boolean active;
 
-    public Employee(String id, String firstName, String lastName, Date dateOfBirth, Date dateOfEmployment, boolean active) {
+    public Employee(String id, String firstName, String middleInitial, String lastName, Date dateOfBirth, Date dateOfEmployment, boolean active) {
         assert id != null;
         this.id = id;
         this.firstName = firstName;
+        this.middleInitial = middleInitial;
         this.lastName = lastName;
         this.dateOfBirth = dateOfBirth;
         this.dateOfEmployment = dateOfEmployment;
@@ -34,6 +36,14 @@ public class Employee {
 
     public void setFirstName(String firstName) {
         this.firstName = firstName;
+    }
+
+    public String getMiddleInitial() {
+        return middleInitial;
+    }
+
+    public void setMiddleInitial(String middleInitial) {
+        this.middleInitial = middleInitial;
     }
 
     public String getLastName() {
@@ -79,6 +89,9 @@ public class Employee {
     public synchronized void overwrite(Employee that) {
         if (that.firstName != null) {
             this.setFirstName(that.firstName);
+        }
+        if (that.middleInitial != null) {
+            this.setMiddleInitial(that.middleInitial);
         }
         if (that.lastName != null) {
             this.setLastName(that.lastName);
