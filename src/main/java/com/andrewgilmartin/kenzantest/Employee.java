@@ -1,7 +1,6 @@
 package com.andrewgilmartin.kenzantest;
 
 import java.util.Date;
-import java.util.Optional;
 
 public class Employee {
 
@@ -77,7 +76,7 @@ public class Employee {
      * Overwrite the fields of this instance with those that are present in that
      * instance. Can not overwrite id.
      */
-    public void overwrite(Employee that) {
+    public synchronized void overwrite(Employee that) {
         if (that.firstName != null) {
             this.setFirstName(that.firstName);
         }
@@ -92,12 +91,6 @@ public class Employee {
         }
         if (that.active != null) {
             this.setActive(that.active);
-        }
-    }
-    
-    public void overwrite(Optional<Employee> that) {
-        if ( that.isPresent() ) {
-            overwrite(that.get());
         }
     }
 }
