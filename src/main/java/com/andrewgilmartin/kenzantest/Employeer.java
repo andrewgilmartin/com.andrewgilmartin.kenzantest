@@ -45,6 +45,20 @@ public class Employeer {
      * Find the employee with the given id. Null is returned when no employee
      * found.
      */
+    public Employee findAnyById(String id) {
+        lock.readLock().lock();
+        try {
+            Optional<Employee> employee = employees.stream().filter(e -> e.getId().equals(id)).findFirst();
+            return employee.isPresent() ? employee.get() : null;
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    /**
+     * Find the active employee with the given id. Null is returned when no
+     * employee found.
+     */
     public Employee findById(String id) {
         lock.readLock().lock();
         try {
@@ -56,7 +70,7 @@ public class Employeer {
     }
 
     /**
-     * Return a list of all employees.
+     * Return a list of all active employees.
      */
     public List<Employee> findAll() {
         lock.readLock().lock();
@@ -65,6 +79,19 @@ public class Employeer {
         } finally {
             lock.readLock().unlock();
         }
+    }
+
+    /**
+     * Deactivates the employee. Returns the deactivated employee or null if no
+     * employee is found.
+     */
+    public Employee deactiveById(String id) {
+        Employee employee = findAnyById(id);
+        if (employee != null) {
+            employee.setActive(Employee.INACTIVE);
+            return employee;
+        }
+        return null;
     }
 
     /**

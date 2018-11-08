@@ -44,38 +44,28 @@ public class EmployerHttpServlet extends HttpServlet {
     }
 
     /**
-     * Get an employee details. {@code
-     *
-     * curl -D - 'http://localhost:8080/kenzantest/58E3C945-3D2B-47F6-9983-D9CD03D7F143'
-     *
-     * }
+     * Get an employee details.
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // GET /employee/id 
+        // GET /employee 
         String id = extractId(request.getPathInfo());
         if (id != null) {
             Employee employee = employeer.findById(id);
             if (employee != null) {
-                response.setStatus(HttpServletResponse.SC_OK);
-                try (Writer out = response.getWriter()) {
-                    gson.toJson(employee, out);
-                }
-                return;
+                respond(response, HttpServletResponse.SC_OK, employee);
+            } else {
+                respond(response, HttpServletResponse.SC_NOT_FOUND);
             }
+        } else {
+            respond(response, HttpServletResponse.SC_OK, employeer.findAll());
         }
-        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        response.setContentLength(0);
     }
 
     /**
      * Create an employee. The field values are a partial employee JSON
-     * structure. Include in the structure those fields to define. {@code
-     *
-     * 
-     * curl -D - -X PUT -H 'Content-Type: application/json' --data '{ "firstName":"Joe", "lastName":"Friday", "dateOfBirth":"1936-02-12" }' 'http://localhost:8080/kenzantest'
-     *
-     * }
+     * structure. Include in the structure those fields to define.
      */
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -88,67 +78,61 @@ public class EmployerHttpServlet extends HttpServlet {
                     data.getDateOfBirth(),
                     data.getDateOfEmployment()
             );
-            response.setStatus(HttpServletResponse.SC_OK);
-            try (Writer out = response.getWriter()) {
-                gson.toJson(employee, out);
-            }
-            return;
+            respond(response, HttpServletResponse.SC_OK, employee);
+        } else {
+            respond(response, HttpServletResponse.SC_BAD_REQUEST);
         }
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        response.setContentLength(0);
     }
 
     /**
      * Update an employee details. The the field values are in a partial
      * employee JSON structure. Only include in the structure those fields to
-     * update. {@code
-     *
-     * curl -D - -X POST -H 'Content-Type: application/json' --data '{ "firstName":"Henry", "dateOfBirth":"1999-11-19" }' 'http://localhost:8080/kenzantest/58E3C945-3D2B-47F6-9983-D9CD03D7F143'
-     * 
-     * }
+     * update.
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // POST /employee/id + JSON
         String id = extractId(request.getPathInfo());
         if (id != null) {
-            Employee employee = employeer.findById(id);
+            Employee employee = employeer.findAnyById(id); // TODO can I update an inactive employee?
             if (employee != null) {
                 Employee updates = extractEmployee(request);
                 if (updates != null) {
                     employee.overwrite(updates);
-                    response.setStatus(HttpServletResponse.SC_OK);
-                    try (Writer out = response.getWriter()) {
-                        gson.toJson(employee, out);
-                    }
-                    return;
+                    respond(response, HttpServletResponse.SC_OK, employee);
+                } else {
+                    respond(response, HttpServletResponse.SC_BAD_REQUEST);
                 }
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.setContentLength(0);
-                return;
+            } else {
+                respond(response, HttpServletResponse.SC_NOT_FOUND);
             }
+        } else {
+            respond(response, HttpServletResponse.SC_NOT_FOUND);
         }
-        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        response.setContentLength(0);
     }
 
     /**
-     * Deactivate all the employees. {@code
-     *
-     * curl -D - -X DELETE --user kenzan:kenzan 'http://localhost:8080/kenzantest'
-     * 
-     * }
+     * Deactivate all the employees.
      */
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // DELETE /employees
+        // DELETE /employee/id
+        // DELETE /employee
         if (request.isUserInRole("manager")) {
-            employeer.deactivateAll();
-            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-            response.setContentLength(0);
+            String id = extractId(request.getPathInfo());
+            if (id != null) {
+                Employee employee = employeer.deactiveById(id);
+                if (employee != null) {
+                    respond(response, HttpServletResponse.SC_NO_CONTENT);
+                } else {
+                    respond(response, HttpServletResponse.SC_NOT_FOUND);
+                }
+            } else {
+                employeer.deactivateAll();
+                respond(response, HttpServletResponse.SC_NO_CONTENT);
+            }
         } else {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentLength(0);
+            respond(response, HttpServletResponse.SC_UNAUTHORIZED);
         }
     }
 
@@ -164,7 +148,8 @@ public class EmployerHttpServlet extends HttpServlet {
 
     private Employee extractEmployee(HttpServletRequest request) {
         try (Reader in = request.getReader()) {
-            Employee data = gson.fromJson(in, Employee.class);
+            Employee data = gson.fromJson(in, Employee.class
+            );
             return data;
         } catch (IOException | JsonIOException | JsonSyntaxException e) {
             return null;
@@ -173,6 +158,23 @@ public class EmployerHttpServlet extends HttpServlet {
 
     private boolean isEmpty(String text) {
         return text == null || IS_EMPTY_STRING.matcher(text).matches();
+    }
+
+    private void respond(HttpServletResponse response, int status) {
+        respond(response, status, null);
+    }
+
+    private void respond(HttpServletResponse response, int status, Object data) {
+        response.setStatus(status);
+        if (data != null) {
+            try (Writer out = response.getWriter()) {
+                gson.toJson(data, out);
+            } catch (IOException | JsonIOException e) {
+                // TODO
+            }
+        } else {
+            response.setContentLength(0);
+        }
     }
 
 }
