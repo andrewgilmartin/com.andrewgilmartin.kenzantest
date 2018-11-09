@@ -100,7 +100,7 @@ public class Employeer {
     public void deactivateAll() {
         lock.writeLock().lock();
         try {
-            employees.forEach(e -> e.setActive(false));
+            employees.forEach(e -> e.setActive(Employee.INACTIVE));
         } finally {
             lock.writeLock().unlock();
         }
