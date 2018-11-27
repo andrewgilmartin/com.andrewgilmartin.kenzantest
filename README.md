@@ -1,4 +1,40 @@
-# com.andrewgilmartin.kenzantest
+## com.andrewgilmartin.kenzantest
+
+The code here was my response to a mini-project asked of me as part of a job interview. I did not get the job, but that outcome has little to do with this mini-project.
+
+# Mini-project
+
+
+Create a web application that exposes REST operations for employees. The API should be able to:
+
+1. Get employees by an ID
+2. Create new employees
+3. Update existing employees
+4. Delete employees
+5. Get all employees
+
+An employee is made up of the following data:
+
+* Employee spec
+* ID - Unique identifier for an employee
+* FirstName - Employee first name
+* MiddleInitial - Employee middle initial
+* LastName - Employee last name
+* DateOfBirth - Employee birthday and year
+* DateOfEmployment - Employee start date
+* Status - ACTIVE or INACTIVE
+
+**Startup** 
+
+On startup, the application should be able to ingest an external source of employees, and should make them available via the GET endpoint.
+
+**ACTIVE vs INACTIVE employees** 
+
+By default, all employees are active, but by way of the API, can be switched to inactive. This should be done by the delete API call. This call should require some manner of authorization header.
+
+When an employee is inactive, they should no longer be able to be retrieved in either the get by id, or get all employees calls
+
+# Response  
 
 To run the employee server you need to install Tomcat 8, create a Tomcat user, build the war, and deploy the WAR to Tomcat.
 
@@ -61,5 +97,3 @@ To deactivate all employees. No content is returned.
     curl -D - -X DELETE --user kenzan:kenzan 'http://localhost:8080/kenzantest'
 
 END
-    
-
