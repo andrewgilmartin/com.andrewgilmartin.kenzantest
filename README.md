@@ -1,6 +1,6 @@
 ## com.andrewgilmartin.kenzantest
 
-The code here was my response to a mini-project asked of me as part of a job interview. I did not get the job, but that outcome has little to do with this mini-project.
+As part of a job interview I was asked to implement a mini-project. This repository is my response. I did not get the job, but that outcome has little to do with this mini-project.
 
 # Mini-project
 
